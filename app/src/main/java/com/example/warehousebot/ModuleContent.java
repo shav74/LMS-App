@@ -19,6 +19,7 @@ public class ModuleContent extends AppCompatActivity {
         if (extras != null) {
             moduleCode = extras.getString("ID");
             moduleName = extras.getString("moduleName");
+            //hello this is the new comment
         }
 
         txtModuleCode = findViewById(R.id.UIModuleCode);
