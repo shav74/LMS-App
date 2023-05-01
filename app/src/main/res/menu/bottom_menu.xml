@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_calendar"
+        android:title= "@string/home"
+        android:icon="@drawable/edit_calendar_24"/>
+
+    <item
+        android:id="@+id/menu_test"
+        android:title= "@string/marks"
+        android:icon="@drawable/show_chart_24"/>
+
+    <item
+        android:id="@+id/menu_home"
+        android:title=""
+        android:enabled="true"/>
+
+    <item
+        android:id="@+id/menu_settings"
+        android:title= "@string/settings"
+        android:icon="@drawable/settings_24"/>
+
+    <item
+        android:id="@+id/menu_more"
+        android:title= "@string/more"
+        android:icon="@drawable/more_horiz_24"/>
+</menu>
