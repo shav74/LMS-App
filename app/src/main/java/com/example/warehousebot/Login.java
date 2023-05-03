@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -27,22 +28,29 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.w3c.dom.Document;
+
+import java.util.List;
+
 public class Login extends AppCompatActivity {
 
     private TextInputEditText editTextEmail, editTextPassword;
     private FirebaseAuth mAuth;
     ProgressBar progressBar;
+    FirebaseFirestore db;
+    CollectionReference studentRef;
+
+    StudentData studentData;
+    LecturerData lecturerData;
+
+    String name, user_password, user_email, dbPassword, degreeName, id, degreeID;
+    List<String> teachingModules;
+    List<String> studentModules;
 
     @Override
     public void onStart() {
         super.onStart();
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
     }
 
     @Override
@@ -50,8 +58,8 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference studentRef = db.collection("Student");
+        db = FirebaseFirestore.getInstance();
+        studentRef = db.collection("Student");
         TextView inp_id = findViewById(R.id.inp_id);
         TextView inp_pass = findViewById(R.id.inp_pass);
         Button loginButton = findViewById(R.id.btn_log);
@@ -62,7 +70,7 @@ public class Login extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String id = inp_id.getText().toString().trim();
+                id = inp_id.getText().toString().trim();
                 String password = inp_pass.getText().toString().trim();
                 progressBar.setVisibility(View.VISIBLE);
 
@@ -76,47 +84,39 @@ public class Login extends AppCompatActivity {
                     return;
                 }
 
-                studentRef.document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                String dbPassword = document.getString("App password");
-                                String user_email = document.getString("email");
-                                String user_password = document.getString("password");
-                                if (dbPassword != null && dbPassword.equals(password)) {
-                                    mAuth.signInWithEmailAndPassword(user_email, user_password)
-                                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                                        progressBar.setVisibility(View.GONE);
-                                                        startActivity(intent);
-                                                        finish();
-                                                    } else {
-                                                        Toast.makeText(Login.this, "Authentication failed.",
-                                                                Toast.LENGTH_SHORT).show();
-                                                        progressBar.setVisibility(View.GONE);
-                                                    }
-                                                }
-                                            });
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Invalid credentials", Toast.LENGTH_SHORT).show();
-                                    progressBar.setVisibility(View.GONE);
-                                }
+                //checking if the user is student or lecturer and passing data to the according class
+                //todo check this
+
+                if (id.charAt(0) == 'l') {
+                    getLecturerData();
+                    lecturerData = new LecturerData(dbPassword, name, user_email, user_password, teachingModules);
+                    LecturerData.setIsLecturer(true);
+                } else {
+                    getStudentData();
+                    studentData = new StudentData(dbPassword, degreeID, name, user_email, user_password, studentModules, degreeName);
+                    StudentData.setIsStudent(true);
+                }
+
+                if (dbPassword != null && dbPassword.equals(password)) {
+                    mAuth.signInWithEmailAndPassword(user_email, user_password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                progressBar.setVisibility(View.GONE);
+                                startActivity(intent);
+                                finish();
                             } else {
-                                Toast.makeText(getApplicationContext(), "User not found!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Login.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                                 progressBar.setVisibility(View.GONE);
                             }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
                         }
-                    }
-                });
+                    });
+                } else {
+                    Toast.makeText(getApplicationContext(), "Invalid credentials", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                }
             }
         });
         registerButton.setOnClickListener(new View.OnClickListener() {
@@ -128,4 +128,51 @@ public class Login extends AppCompatActivity {
             }
         });
     }
+
+    public void getStudentData() {
+        db.collection("Student").document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        degreeID = document.getString("degreeId");
+                        dbPassword = document.getString("App password");
+                        user_email = document.getString("email");
+                        user_password = document.getString("password");
+                        name = document.getString("display name");
+                        studentModules = (List<String>) document.get("learning modules");
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "data adding failed!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void getLecturerData() {
+        db.collection("Lecturer").document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        dbPassword = document.getString("App password");
+                        user_email = document.getString("email");
+                        user_password = document.getString("password");
+                        name = document.getString("display name");
+                        teachingModules = (List<String>) document.get("teaching modules");
+                    } else {
+                        Toast.makeText(getApplicationContext(), "data adding failed!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 }

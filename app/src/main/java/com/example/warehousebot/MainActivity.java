@@ -92,13 +92,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public int getUserType(){
-        String email = user.getEmail();
-        int type = email.charAt(0) == 'l' ? 1 : 0;
-        //1 is lecturer 0 is student
-        return type;
-    }
-
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
