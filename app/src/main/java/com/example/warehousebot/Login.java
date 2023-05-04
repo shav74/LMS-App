@@ -89,19 +89,22 @@ public class Login extends AppCompatActivity {
 
                 if (id.charAt(0) == 'l') {
                     getLecturerData();
-                    lecturerData = new LecturerData(dbPassword, name, user_email, user_password, teachingModules);
                     LecturerData.setIsLecturer(true);
                 } else {
                     getStudentData();
-                    studentData = new StudentData(dbPassword, degreeID, name, user_email, user_password, studentModules, degreeName);
                     StudentData.setIsStudent(true);
                 }
 
                 if (dbPassword != null && dbPassword.equals(password)) {
+                    Log.d("loginhere", "email is " + user_email);
+                    Log.d("loginhere", "pw is " + user_password);
+
                     mAuth.signInWithEmailAndPassword(user_email, user_password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
+                            Log.d("loginhere", "okay were in ");
                             if (task.isSuccessful()) {
+                                Log.d("loginhere", "done");
                                 Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                 progressBar.setVisibility(View.GONE);
@@ -141,7 +144,11 @@ public class Login extends AppCompatActivity {
                         user_email = document.getString("email");
                         user_password = document.getString("password");
                         name = document.getString("display name");
+                        degreeID = document.getString("degreeId");
                         studentModules = (List<String>) document.get("learning modules");
+                        degreeName = "";
+                        studentData = new StudentData(dbPassword, degreeID, name, user_email, user_password, studentModules, degreeName);
+
                     }
                     else {
                         Toast.makeText(getApplicationContext(), "data adding failed!", Toast.LENGTH_SHORT).show();
@@ -154,7 +161,7 @@ public class Login extends AppCompatActivity {
     }
 
     public void getLecturerData() {
-        db.collection("Lecturer").document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("lec").document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -165,6 +172,7 @@ public class Login extends AppCompatActivity {
                         user_password = document.getString("password");
                         name = document.getString("display name");
                         teachingModules = (List<String>) document.get("teaching modules");
+                        lecturerData = new LecturerData(dbPassword, name, user_email, user_password, teachingModules);
                     } else {
                         Toast.makeText(getApplicationContext(), "data adding failed!", Toast.LENGTH_SHORT).show();
                     }

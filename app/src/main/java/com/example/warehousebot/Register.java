@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -34,8 +35,11 @@ public class Register extends AppCompatActivity {
     ProgressBar progressBar;
 
     TextView textViewLogNow;
+    TextInputEditText inp_plymuid,inp_plympass,inp_apppass,inp_dname,inp_plymemail;
     String PUemail;
-
+    ProgressBar progressReg;
+    FirebaseFirestore db;
+    String PUid, PUpass,Apass,Dname;
     @Override
     public void onStart() {
         super.onStart();
@@ -53,22 +57,22 @@ public class Register extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        TextInputEditText inp_plymuid = findViewById(R.id.inp_PUid);
-        TextInputEditText inp_plympass = findViewById(R.id.inp_PUpass);
-        TextInputEditText inp_apppass = findViewById(R.id.inp_AppPass);
-        TextInputEditText inp_dname = findViewById(R.id.inp_Dname);
-        TextInputEditText inp_plymemail = findViewById(R.id.inp_PUemail);
+        inp_plymuid = findViewById(R.id.inp_PUid);
+        inp_plympass = findViewById(R.id.inp_PUpass);
+        inp_apppass = findViewById(R.id.inp_AppPass);
+        inp_dname = findViewById(R.id.inp_Dname);
+        inp_plymemail = findViewById(R.id.inp_PUemail);
 
         Button btn_reg = findViewById(R.id.btn_reg);
         btn_reg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String PUid = inp_plymuid.getText().toString().trim();
-                String PUpass = inp_plympass.getText().toString().trim();
-                String Apass = inp_apppass.getText().toString().trim();
-                String Dname = inp_dname.getText().toString().trim();
+                 PUid = inp_plymuid.getText().toString().trim();
+                 PUpass = inp_plympass.getText().toString().trim();
+                 Apass = inp_apppass.getText().toString().trim();
+                 Dname = inp_dname.getText().toString().trim();
                 PUemail = inp_plymemail.getText().toString().trim();
-                ProgressBar progressReg = findViewById(R.id.progressBarReg);
+                progressReg = findViewById(R.id.progressBarReg);
 
                 if (TextUtils.isEmpty(PUid)) {
                     inp_plymuid.setError("ID Cannot be empty");
@@ -95,57 +99,140 @@ public class Register extends AppCompatActivity {
                     return;
                 }
 
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                DocumentReference docRef = db.collection("Student").document(PUid);
-                progressReg.setVisibility(View.VISIBLE);
-                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                String password = document.getString("password");
-                                if (password.equals(PUpass)) {
-                                    docRef.update("display name", Dname);
-                                    docRef.update("App password", Apass);
-                                    docRef.update("email", PUemail);
-                                    Toast.makeText(getApplicationContext(), "User added successfully!", Toast.LENGTH_SHORT).show();
-                                    mAuth.createUserWithEmailAndPassword(PUemail, PUpass)
-                                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Intent intent = new Intent(getApplicationContext(), Login.class);
-                                                        startActivity(intent);
-                                                        finish();
+                db = FirebaseFirestore.getInstance();
+                String user;
+                if (PUid.charAt(0) == 'l' || PUid.charAt(0) == 'L') {
+                    lecturerRegister();
+                } else {
+                    registerStudent();
+                }
+            }
+        });
+    }
 
-                                                        Toast.makeText(Register.this, "Account Created.",
-                                                                Toast.LENGTH_SHORT).show();
-                                                        progressReg.setVisibility(View.GONE);
+    void registerStudent(){
+        DocumentReference studentref = db.collection("Student").document(PUid);
+        progressReg.setVisibility(View.VISIBLE);
+        studentref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    Log.d("authhere", "match making");
+                    Log.d("authhere", "puid is " + PUid);
+                    Log.d("authhere", "PU pass is" + PUpass);
 
-                                                    } else {
-                                                        Toast.makeText(Register.this, "Authentication failed.",
-                                                                Toast.LENGTH_SHORT).show();
-                                                        progressReg.setVisibility(View.GONE);
+                    if (document.exists()) {
+                        Log.d("authhere", "document is here");
+                        String password = document.getString("password");
+                        Log.d("authhere", "password is  + " + password);
+                        if (password.equals(PUpass)) {
+                            Log.d("authhere", "gotchiuuuuu");
+                            studentref.update("display name", Dname);
+                            studentref.update("App password", Apass);
+                            studentref.update("email", PUemail);
+                            Toast.makeText(getApplicationContext(), "User added successfully!", Toast.LENGTH_SHORT).show();
+                            mAuth.createUserWithEmailAndPassword(PUemail, PUpass)
+                                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
 
-                                                    }
-                                                }
-                                            });
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Invalid user!", Toast.LENGTH_SHORT).show();
-                                    progressReg.setVisibility(View.GONE);
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            Log.d("authhere", "making user");
+                                            if (task.isSuccessful()) {
+                                                Log.d("authhere", "hareeee");
+                                                Intent intent = new Intent(getApplicationContext(), Login.class);
+                                                startActivity(intent);
+                                                finish();
 
-                                }
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Invalid user!", Toast.LENGTH_SHORT).show();
-                                progressReg.setVisibility(View.GONE);
+                                                Toast.makeText(Register.this, "Account Created.",
+                                                        Toast.LENGTH_SHORT).show();
+                                                progressReg.setVisibility(View.GONE);
 
-                            }
+                                            } else {
+                                                Toast.makeText(Register.this, "Authentication failed.",
+                                                        Toast.LENGTH_SHORT).show();
+                                                progressReg.setVisibility(View.GONE);
+
+                                            }
+                                        }
+                                    });
                         } else {
-                            Toast.makeText(getApplicationContext(), "Error: " + task.getException(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Invalid user!", Toast.LENGTH_SHORT).show();
+                            progressReg.setVisibility(View.GONE);
+
                         }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Invalid user!", Toast.LENGTH_SHORT).show();
+                        progressReg.setVisibility(View.GONE);
+
                     }
-                });
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error: " + task.getException(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    void lecturerRegister(){
+        DocumentReference lecRef = db.collection("lec").document("l1");
+        progressReg.setVisibility(View.VISIBLE);
+        lecRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    Log.d("authhere", "match making");
+                    Log.d("authhere", "lecturererrrr");
+                    Log.d("authhere", "puid is " + PUid);
+                    Log.d("authhere", "PU pass is" + PUpass);
+
+                    if (document.exists()) {
+                        Log.d("authhere", "document is here");
+                        String password = document.getString("password");
+                        Log.d("authhere", "password is  + " + password);
+                        if (password.equals(PUpass)) {
+                            Log.d("authhere", "gotchiuuuuu");
+                            lecRef.update("display name", Dname);
+                            lecRef.update("App password", Apass);
+                            lecRef.update("email", PUemail);
+                            Toast.makeText(getApplicationContext(), "User added successfully!", Toast.LENGTH_SHORT).show();
+                            mAuth.createUserWithEmailAndPassword(PUemail, PUpass)
+                                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            Log.d("authhere", "making user");
+                                            if (task.isSuccessful()) {
+                                                Log.d("authhere", "hareeee");
+                                                Intent intent = new Intent(getApplicationContext(), Login.class);
+                                                startActivity(intent);
+                                                finish();
+
+                                                Toast.makeText(Register.this, "Account Created.",
+                                                        Toast.LENGTH_SHORT).show();
+                                                progressReg.setVisibility(View.GONE);
+
+                                            } else {
+                                                Toast.makeText(Register.this, "Authentication failed.",
+                                                        Toast.LENGTH_SHORT).show();
+                                                progressReg.setVisibility(View.GONE);
+
+                                            }
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Invalid user!", Toast.LENGTH_SHORT).show();
+                            progressReg.setVisibility(View.GONE);
+
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Invalid user!", Toast.LENGTH_SHORT).show();
+                        progressReg.setVisibility(View.GONE);
+
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error: " + task.getException(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

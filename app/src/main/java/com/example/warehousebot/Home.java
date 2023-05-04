@@ -73,32 +73,34 @@ public class Home extends Fragment implements RecyclerVIewInterface {
     }
 
     private void eventChangesListener() {
-        db.collection("modules").whereIn("moduleCode", showingModules)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+        if(showingModules != null){
+            db.collection("modules").whereIn("moduleCode", showingModules)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 
-                        if (error != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
+                            if (error != null) {
+                                if (progressDialog.isShowing()) {
+                                    progressDialog.dismiss();
+                                }
+                                Log.e("Firebase error", error.getMessage());
+                                return;
                             }
-                            Log.e("Firebase error", error.getMessage());
-                            return;
+
+                            for (DocumentChange dc : value.getDocumentChanges()) {
+                                if (dc.getType() == DocumentChange.Type.ADDED || dc.getType() == DocumentChange.Type.MODIFIED) {
+                                    modulesArrayList.add(dc.getDocument().toObject(Modules.class));
+                                }
+                                adapterModules.notifyDataSetChanged();
+                                if (progressDialog.isShowing()) {
+                                    progressDialog.dismiss();
+                                }
+                            }
+
                         }
 
-                        for (DocumentChange dc : value.getDocumentChanges()) {
-                            if (dc.getType() == DocumentChange.Type.ADDED || dc.getType() == DocumentChange.Type.MODIFIED) {
-                                modulesArrayList.add(dc.getDocument().toObject(Modules.class));
-                            }
-                            adapterModules.notifyDataSetChanged();
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-
-                    }
-
-                });
+                    });
+        }
 
     }
 
