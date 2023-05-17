@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".Marks">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/exams_recycle_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="marks" />
+        android:layout_height="616dp" />
 
 </FrameLayout>
