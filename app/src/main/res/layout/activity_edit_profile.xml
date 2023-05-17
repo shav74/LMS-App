@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#3FBBC6"
+    tools:context=".EditProfile">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/backplt" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="219dp"
+        android:layout_height="146dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/plymuni" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout7"
+        android:layout_width="335dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="25dp"
+        app:boxCornerRadiusBottomEnd="40dp"
+        app:boxCornerRadiusBottomStart="40dp"
+        app:boxCornerRadiusTopEnd="40dp"
+        app:boxCornerRadiusTopStart="40dp"
+        app:boxStrokeColor="#00FFFFFF"
+        app:boxStrokeWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inp_new_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Enter New Display Name"
+            android:inputType="textPersonName" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout8"
+        android:layout_width="335dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="15dp"
+        app:boxCornerRadiusBottomEnd="40dp"
+        app:boxCornerRadiusBottomStart="40dp"
+        app:boxCornerRadiusTopEnd="40dp"
+        app:boxCornerRadiusTopStart="40dp"
+        app:boxStrokeColor="#00FFFFFF"
+        app:boxStrokeWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout7">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inp_new_contact"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Enter New Contact Number"
+            android:inputType="phone" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout9"
+        android:layout_width="335dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="15dp"
+        app:boxCornerRadiusBottomEnd="40dp"
+        app:boxCornerRadiusBottomStart="40dp"
+        app:boxCornerRadiusTopEnd="40dp"
+        app:boxCornerRadiusTopStart="40dp"
+        app:boxStrokeColor="#00FFFFFF"
+        app:boxStrokeWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout8">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inp_new_app_pass"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Enter New Application Password"
+            android:inputType="numberPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:gravity="center"
+        android:text="Profle Update"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView2" />
+
+    <Button
+        android:id="@+id/btn_update"
+        android:layout_width="131dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/button_bg"
+        android:text="UPDATE"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout9" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="333dp"
+        android:layout_height="94dp"
+        android:layout_marginTop="20dp"
+        android:justificationMode="inter_word"
+        android:text="We take your security seriously and request that you update your display name, contact number, and app password to help us protect your personal information. Doing so reduces the risk of potential threats to your account."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_update" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="333dp"
+        android:layout_height="116dp"
+        android:justificationMode="inter_word"
+        android:text="Updating your profile helps us provide a more personalized experience by allowing you to display a unique name and keep your contact information up-to-date. By updating your profile, you agree to our Terms of Service and Privacy Policy, which ensure the continued protection of your personal information."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView10"
+        app:layout_constraintVertical_bias="0.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
