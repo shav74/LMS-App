@@ -32,9 +32,10 @@ public class Calender extends Fragment {
     private TextView title;
     private CalendarView calendarView;
     private EditText lectureData;
-    private Button buttonSave,addEndTime;
-    private String stringDateSelected, startingTime, endingTime;
+    private Button buttonSave;
     private DatabaseReference databaseReference;
+    String stringDateSelected;
+    EditText startTime, endTime;
     FirebaseDatabase database;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,17 +53,11 @@ public class Calender extends Fragment {
         int month = calendar.get(Calendar.MONTH);
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
-        buttonAddLecTime = (FloatingActionButton) view.findViewById(R.id.btn_addLecTime);
-        addEndTime = view.findViewById(R.id.addEndTime);
-
         title = view.findViewById(R.id.calendar_title);
         buttonSave = view.findViewById(R.id.buttonSave);
-        buttonAddLecTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openCalendarDialog(year, month, dayOfMonth,1);
-            }
-        });
+
+        startTime = view.findViewById(R.id.start_time);
+        endTime = view.findViewById(R.id.end_time);
 
         //todo here
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
@@ -77,25 +72,25 @@ public class Calender extends Fragment {
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                databaseReference.child(stringDateSelected).setValue(lectureData.getText() + "|" + startingTime + endingTime);
+                databaseReference.child(stringDateSelected).setValue(title.getText() + "|" + startTime.getText() + "|" + endTime.getText() + "-");
             }
         });
 
         return view;
     }
 
-    private void openCalendarDialog(int _year, int _month, int _date, int _btnId) {
-        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), R.style.DialogTheme, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hours, int minutes) {
-                if(_btnId == 1){
-                    startingTime = String.format("%s:%s",String.valueOf(hours), String.valueOf(minutes + 1));
-                } else if (_btnId == 2) {
-                    endingTime = String.format("%s:%s",String.valueOf(hours), String.valueOf(minutes + 1));
-                }
-            }
-        }, 15, 20, true);
-        timePickerDialog.show();
+//    private void openCalendarDialog(int _year, int _month, int _date, int _btnId) {
+//        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), R.style.DialogTheme, new TimePickerDialog.OnTimeSetListener() {
+//            @Override
+//            public void onTimeSet(TimePicker timePicker, int hours, int minutes) {
+//                if(_btnId == 1){
+//                    startingTime = String.format("%s:%s",String.valueOf(hours), String.valueOf(minutes + 1));
+//                } else if (_btnId == 2) {
+//                    endingTime = String.format("%s:%s",String.valueOf(hours), String.valueOf(minutes + 1));
+//                }
+//            }
+//        }, 15, 20, true);
+//        timePickerDialog.show();
 //        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
 //            @Override
 //            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -105,7 +100,7 @@ public class Calender extends Fragment {
 //            }
 //        }, _year, _month, _date);
 //        datePickerDialog.show();
-    }
+//    }
 
     private void calendarClicked(){
         databaseReference.child(stringDateSelected).addListenerForSingleValueEvent(new ValueEventListener() {

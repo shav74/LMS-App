@@ -20,6 +20,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.022" />
@@ -35,6 +36,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.213" />
 
+
         <EditText
             android:id="@+id/editTextLec"
             android:layout_width="332dp"
@@ -46,37 +48,43 @@
             android:text="Enter Lecture Title Here"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.491"
+            app:layout_constraintHorizontal_bias="0.524"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.732" />
+            app:layout_constraintVertical_bias="0.737" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="From: "
-            android:textSize="22sp"
-            android:textStyle="bold"
+        <EditText
+            android:id="@+id/start_time"
+            android:layout_width="150dp"
+            android:layout_height="52dp"
+            android:background="@drawable/edit_text_round"
+            android:ems="10"
+            android:gravity="center"
+            android:inputType="textPersonName"
+            android:text="From"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.09"
+            app:layout_constraintHorizontal_bias="0.131"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.837" />
+            app:layout_constraintVertical_bias="0.83" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="To: "
-            android:textSize="22sp"
-            android:textStyle="bold"
+
+        <EditText
+            android:id="@+id/end_time"
+            android:layout_width="150dp"
+            android:layout_height="52dp"
+            android:background="@drawable/edit_text_round"
+            android:ems="10"
+            android:gravity="center"
+            android:inputType="textPersonName"
+            android:text="To"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.661"
+            app:layout_constraintHorizontal_bias="0.864"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.837" />
-
+            app:layout_constraintVertical_bias="0.83" />
 
         <Button
             android:id="@+id/buttonSave"
@@ -91,36 +99,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.976" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_addLecTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:src="@drawable/time_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.332"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.844"
-            app:maxImageSize="40dp"
-            tools:ignore="SpeakableTextPresentCheck" />
-
-            <Button
-                android:id="@+id/addEndTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/time_24"
-                android:text="press"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.881"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.844"
-                app:maxImageSize="40dp"
-                tools:ignore="SpeakableTextPresentCheck"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
