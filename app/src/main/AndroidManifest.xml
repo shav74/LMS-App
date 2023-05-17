@@ -9,7 +9,7 @@
         android:icon="@drawable/view_quilt_24"
         android:label="@string/lms"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        android:theme="@style/Theme.LMSApp"
         tools:targetApi="31">
         <activity
             android:name=".MaterialItemContent"

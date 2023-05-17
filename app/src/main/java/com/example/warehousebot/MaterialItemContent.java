@@ -2,11 +2,9 @@ package com.example.warehousebot;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,31 +13,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.moduleinstall.internal.ApiFeatureRequest;
-import com.google.android.gms.tasks.OnCompleteListener;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firestore.v1.WriteResult;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MaterialItemContent extends AppCompatActivity {
 
-    String title, details, link, extraDetails, moduleCode;
+    String title, details, link, extraDetails, moduleCode, type;
 
-    TextView textViewTitle, textViewDetails, textViewLink, textViewExtras;
+    TextView textViewTitle, textViewDetails, textViewExtras;
 
-    private EditText editTextTitle, editTextDetails, editTextLink, editTextExtras;
+    private EditText editTextTitle, editTextDetails, editTextLink, editTextExtras, editTextType;
     FloatingActionButton buttonEdit, buttonDelete;
-    Button btnSubmitChanges;
+    Button btnSubmitChanges, buttonOpnenURL;
     AlertDialog dialog;
     FirebaseFirestore db;
     Map<String, Object> data;
@@ -56,6 +49,7 @@ public class MaterialItemContent extends AppCompatActivity {
             link = extras.getString("link");
             extraDetails = extras.getString("extraDetails");
             moduleCode = extras.getString("moduleCode");
+            type = extras.getString("type");
         }
 
         buttonEdit = (FloatingActionButton) findViewById(R.id.btn_edit_materials);
@@ -64,12 +58,13 @@ public class MaterialItemContent extends AppCompatActivity {
         textViewTitle = findViewById(R.id.txt_mt_name);
         textViewDetails = findViewById(R.id.txt_mt_details);
         textViewExtras = findViewById(R.id.txt_mt_extras);
-        textViewLink = findViewById(R.id.txt_mt_link);
+
+        buttonOpnenURL = findViewById(R.id.btn_mt_openURL);
 
         textViewTitle.setText(title);
         textViewDetails.setText(details);
         textViewExtras.setText(extraDetails);
-        textViewLink.setText(link);
+
 
         //get builder and details
 
@@ -90,6 +85,7 @@ public class MaterialItemContent extends AppCompatActivity {
         editTextExtras = view.findViewById(R.id.material_extra_details);
         editTextLink = view.findViewById(R.id.material_link);
         btnSubmitChanges = view.findViewById(R.id.material_submit);
+        editTextType = view.findViewById(R.id.material_type);
 
         builder.setView(view);
         dialog = builder.create();
@@ -108,6 +104,9 @@ public class MaterialItemContent extends AppCompatActivity {
                     return;
                 } else if (editTextLink.getText().toString().isEmpty()) {
                     editTextLink.setError("link cannot be empty");
+                    return;
+                } else if (editTextType.getText().toString().isEmpty()) {
+                    editTextType.setError("type cannot be empty. set upload or open");
                     return;
                 } else {
 
@@ -129,6 +128,7 @@ public class MaterialItemContent extends AppCompatActivity {
                     data.put("materialDetails", editTextDetails.getText().toString());
                     data.put("materialLink", editTextLink.getText().toString());
                     data.put("materialExtraDetails", editTextExtras.getText().toString());
+                    data.put("materialType", editTextType.getText().toString());
 
                     db.collection("modules").document(moduleCode).collection("materials").document(title).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -170,6 +170,18 @@ public class MaterialItemContent extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 dialog.show();
+            }
+        });
+
+        buttonOpnenURL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = link;
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    url = "http://" + url;
+                }
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                startActivity(browserIntent);
             }
         });
     }

@@ -44,7 +44,7 @@ public class ModuleContent extends AppCompatActivity implements RecyclerVIewInte
     AdapterMaterials adapterMaterials;
     FirebaseFirestore db;
     Button buttonmaterialSubmit;
-    private EditText title, deadline, extraDetails, link;
+    private EditText title, deadline, extraDetails, link, type;
     ProgressDialog progressDialog;
     private FloatingActionButton btnAddMaterials;
     private TextView txtModuleCode, txtModuleName;
@@ -71,6 +71,7 @@ public class ModuleContent extends AppCompatActivity implements RecyclerVIewInte
         deadline = view.findViewById(R.id.material_details);
         extraDetails = view.findViewById(R.id.material_extra_details);
         link = view.findViewById(R.id.material_link);
+        type = view.findViewById(R.id.material_type);
         buttonmaterialSubmit = view.findViewById(R.id.material_submit);
 
         builder.setView(view);
@@ -90,6 +91,9 @@ public class ModuleContent extends AppCompatActivity implements RecyclerVIewInte
                 } else if (link.getText().toString().isEmpty()) {
                     link.setError("link cannot be empty");
                     return;
+                } else if (type.getText().toString().isEmpty()) {
+                    type.setError("Type cannot be empty. (upload or open)");
+                    return;
                 } else {
 
                     Map<String, Object> data = new HashMap<>();
@@ -97,6 +101,7 @@ public class ModuleContent extends AppCompatActivity implements RecyclerVIewInte
                     data.put("materialDetails", deadline.getText().toString());
                     data.put("materialLink", link.getText().toString());
                     data.put("materialExtraDetails", extraDetails.getText().toString());
+                    data.put("materialType", type.getText().toString());
 
                     db.collection("modules").document(moduleCode).collection("materials")
                             .document(title.getText().toString()).set(data)
@@ -192,11 +197,13 @@ public class ModuleContent extends AppCompatActivity implements RecyclerVIewInte
         String details = lecMaterialsArrayList.get(position).getMaterialDetails();
         String link = lecMaterialsArrayList.get(position).getMaterialLink();
         String extraDetails = lecMaterialsArrayList.get(position).getMaterialExtraDetails();
+        String type = lecMaterialsArrayList.get(position).getType();
         intent.putExtra("title", title);
         intent.putExtra("details", details);
         intent.putExtra("link", link);
         intent.putExtra("extraDetails", extraDetails);
         intent.putExtra("moduleCode",moduleCode);
+        intent.putExtra("type", type);
         startActivity(intent);
     }
 }
