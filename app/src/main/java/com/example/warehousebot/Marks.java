@@ -51,7 +51,9 @@ public class Marks extends Fragment implements RecyclerVIewInterface {
         adapterExams = new AdapterExams(getActivity(), examsArrayList, this);
 
         recyclerView.setAdapter(adapterExams);
-        eventChangesListener();
+        if (StudentData.isIsStudent()){
+            eventChangesListener();
+        }
 
         return view;
     }

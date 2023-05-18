@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.warehousebot.databinding.ActivityMainBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -35,18 +36,28 @@ public class MainActivity extends AppCompatActivity {
         binding.bottomNavigationView.setBackground(null);
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
                 case R.id.menu_calendar:
-                    replaceFragment(new Calender());
+                    replaceFragment(new CalenderNew());
                     break;
-                case  R.id.btn_home:
+                case R.id.btn_home:
                     replaceFragment(new Home());
                     break;
                 case R.id.menu_test:
-                    replaceFragment(new Marks());
+                    if (StudentData.isIsStudent()) {
+                        replaceFragment(new Marks());
+                    }
+                    if (LecturerData.isIsLecturer()) {
+                        Toast.makeText(this, "Marks tab is only for students", Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case R.id.menu_settings:
-                    replaceFragment(new Settings());
+                    if (StudentData.isIsStudent()) {
+                        replaceFragment(new Settings());
+                    }
+                    if (LecturerData.isIsLecturer()) {
+                        Toast.makeText(this, "Profile tab is only for students", Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case R.id.menu_more:
                     replaceFragment(new More());
@@ -58,20 +69,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         auth = FirebaseAuth.getInstance();
         buttonLogout = findViewById(R.id.btn_logout);
         textViewUserDetail = findViewById(R.id.user_details);
         user = auth.getCurrentUser();
         btn_home = findViewById(R.id.btn_home);
 
-        if(user == null){
+        if (user == null) {
             Intent intent = new Intent(getApplicationContext(), Login.class);
             startActivity(intent);
             finish();
-        }else {
+        } else {
             String fullEmail = user.getEmail();
-            String nameOfUser = fullEmail.substring(0,fullEmail.indexOf('@'));
+            String nameOfUser = fullEmail.substring(0, fullEmail.indexOf('@'));
             textViewUserDetail.setText(String.format("Hello %s", nameOfUser));
         }
 
@@ -92,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void replaceFragment(Fragment fragment){
+    private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout, fragment);

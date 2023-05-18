@@ -28,7 +28,7 @@ public class Settings extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_settings, container, false);
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
 
         nameTextView = view.findViewById(R.id.d_name_view);
@@ -40,32 +40,36 @@ public class Settings extends Fragment {
         editButton = view.findViewById(R.id.btn_edit);
 
         db = FirebaseFirestore.getInstance();
-        userId = StudentData.getEmail().substring(0, StudentData.getEmail().indexOf("@"));
+        if (LecturerData.isIsLecturer()) {
 
-        DocumentReference docRef = db.collection("Student").document(userId);
-        docRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    String displayName = document.getString("display name");
-                    String email = document.getString("email");
-                    String degree = document.getString("degree");
-                    String batch = document.getString("batch");
-                    String phone = document.getString("phone");
+        } else {
+            userId = StudentData.getEmail().substring(0, StudentData.getEmail().indexOf("@"));
+            DocumentReference docRef = db.collection("Student").document(userId);
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        String displayName = document.getString("display name");
+                        String email = document.getString("email");
+                        String degree = document.getString("degree");
+                        String batch = document.getString("batch");
+                        String phone = document.getString("phone");
 
-                    nameTextView.setText(displayName != null ? displayName : "-");
-                    emailTextView.setText(email != null ? email : "-");
-                    indexTextView.setText(userId);
-                    degreeTextView.setText(degree != null ? degree : "-");
-                    batchTextView.setText(batch != null ? batch : "-");
-                    contactTextView.setText(phone != null ? phone : "-");
+                        nameTextView.setText(displayName != null ? displayName : "-");
+                        emailTextView.setText(email != null ? email : "-");
+                        indexTextView.setText(userId);
+                        degreeTextView.setText(degree != null ? degree : "-");
+                        batchTextView.setText(batch != null ? batch : "-");
+                        contactTextView.setText(phone != null ? phone : "-");
+                    } else {
+                        Toast.makeText(getActivity(), "No such document", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(getActivity(), "No such document", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Toast.makeText(getActivity(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
+
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

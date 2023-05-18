@@ -96,12 +96,13 @@ public class Home extends Fragment implements RecyclerVIewInterface {
                                     progressDialog.dismiss();
                                 }
                             }
+                            progressDialog.dismiss();
 
                         }
 
                     });
         }
-
+        progressDialog.dismiss();
     }
 
     @Override

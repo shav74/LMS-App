@@ -1,10 +1,10 @@
 package com.example.warehousebot;
 
-import android.app.TimePickerDialog;
 import androidx.annotation.NonNull;
 
 import android.os.Bundle;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.CalendarView;
 import android.widget.EditText;
 
@@ -22,26 +21,29 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
 
-public class Calender extends Fragment {
+public class CalenderNew extends Fragment {
 
-    private FloatingActionButton buttonAddLecTime;
     private TextView title;
     private CalendarView calendarView;
     private EditText lectureData;
     private Button buttonSave;
+    String lecDetails = "";
     private DatabaseReference databaseReference;
     String stringDateSelected;
     EditText startTime, endTime;
+
+    TextView lec1Time, lec2Time, lec1Name, lec2Name;
+
+    CardView lecCard1, lecCard2;
     FirebaseDatabase database;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_calender, container, false);
+        View view = inflater.inflate(R.layout.fragment_calender_new, container, false);
 
         database = FirebaseDatabase.getInstance();
 
@@ -59,6 +61,23 @@ public class Calender extends Fragment {
         startTime = view.findViewById(R.id.start_time);
         endTime = view.findViewById(R.id.end_time);
 
+        lec1Name = view.findViewById(R.id.lec1_name);
+        lec2Name = view.findViewById(R.id.lec2_name);
+        lec1Time = view.findViewById(R.id.lec1_time);
+        lec2Time = view.findViewById(R.id.lec2_time);
+
+        lecCard1 = (CardView) view.findViewById(R.id.lec_card1);
+        lecCard2 = (CardView) view.findViewById(R.id.lec_card2);
+
+        if(LecturerData.isIsLecturer()){
+            buttonSave.setVisibility(View.VISIBLE);
+            startTime.setVisibility(View.VISIBLE);
+            endTime.setVisibility(View.VISIBLE);
+            lectureData.setVisibility(View.VISIBLE);
+        }else{
+            lecCard1.setVisibility(View.VISIBLE);
+            lecCard2.setVisibility(View.VISIBLE);
+        }
         //todo here
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -72,44 +91,47 @@ public class Calender extends Fragment {
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                databaseReference.child(stringDateSelected).setValue(title.getText() + "|" + startTime.getText() + "|" + endTime.getText() + "-");
+                databaseReference.child(stringDateSelected).setValue(lecDetails + lectureData.getText() + "|" + startTime.getText() + "-" + endTime.getText() + "^");
             }
         });
 
         return view;
     }
 
-//    private void openCalendarDialog(int _year, int _month, int _date, int _btnId) {
-//        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), R.style.DialogTheme, new TimePickerDialog.OnTimeSetListener() {
-//            @Override
-//            public void onTimeSet(TimePicker timePicker, int hours, int minutes) {
-//                if(_btnId == 1){
-//                    startingTime = String.format("%s:%s",String.valueOf(hours), String.valueOf(minutes + 1));
-//                } else if (_btnId == 2) {
-//                    endingTime = String.format("%s:%s",String.valueOf(hours), String.valueOf(minutes + 1));
-//                }
-//            }
-//        }, 15, 20, true);
-//        timePickerDialog.show();
-//        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
-//            @Override
-//            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-//                //todo do what you want with date yyyy mm dd
-//                dateAndTime.setText(String.format("%s / %s / %s", String.valueOf(year), String.valueOf(month + 1), String.valueOf(day)));
-//                timePickerDialog.show();
-//            }
-//        }, _year, _month, _date);
-//        datePickerDialog.show();
-//    }
-
     private void calendarClicked(){
         databaseReference.child(stringDateSelected).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null){
-                    lectureData.setText(snapshot.getValue().toString());
+                    lecDetails = (snapshot.getValue().toString());
+                    if(lecDetails.length() > 10){
+                        try {
+                            int lecOneEnd = 0;
+                            if(lecDetails.indexOf('^') != -1){
+                                lecOneEnd  = lecDetails.indexOf('^');
+                                String _lec1Name = lecDetails.substring(0, lecDetails.indexOf('|'));
+                                lec1Name.setText(_lec1Name);
+                                String _lec1Time = lecDetails.substring(lecDetails.indexOf('|')+1, lecDetails.indexOf('^'));
+                                lec1Time.setText(_lec1Time);
+                            }else{
+                                lec1Name.setText("-");
+                                lec1Time.setText("-");
+                            }
+                            if(lecDetails.indexOf('^') != -1 && lecDetails.lastIndexOf('^') != lecOneEnd){
+                                String _lec2Name = lecDetails.substring(lecDetails.indexOf('^')+1,lecDetails.lastIndexOf('|'));
+                                lec2Name.setText(_lec2Name);
+                                String _lec2Time = lecDetails.substring(lecDetails.lastIndexOf('|'),lecDetails.lastIndexOf('^'));
+                                lec2Time.setText(_lec2Time);
+                            }else{
+                                lec2Name.setText("-");
+                                lec2Time.setText("-");
+                            }
+                        }catch (Exception e){
+
+                        }
+                    }
                 }else {
-                    lectureData.setText("null");
+                    lectureData.setText("");
                 }
             }
 
